@@ -1,0 +1,103 @@
+.main {
+    display: flex;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+}
+.lewo {
+    border: 5px solid lightgray;
+    height: 500px;
+    width: 400px;
+    background-color: white;
+    border-radius: 1em;
+}
+
+.srodek-lewo {
+    margin-left: 100px;
+}
+
+button {
+    height: 50px;
+    width: 207px;
+    background-color: rgb(74, 74, 253);
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    color: white;
+    cursor: pointer;
+}
+
+input {
+    height: 50px;
+    width: 200px;
+    align-content: center;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+}
+
+.form {
+    height: 100px;
+    width: 200px;
+    background-color: lightgray;
+    align-items: center;
+    align-content: center;
+}
+
+#btn-cancel-folder,
+#btn-cancel-file,
+#btn-create-folder,
+#btn-create-file {
+    margin-top: 10px;
+}
+
+.main {
+    background-color: lightgray;
+    height: 100vh;
+    width: 100vw;
+}
+
+
+.prawo {
+    border: 5px solid lightgray;
+    margin-left: 50px;
+}
+
+.prawo-folders {
+    background-color: white;
+    height: 150px;
+    width: 70vw;
+    border-radius: 1em;
+    align-content: center;
+}
+
+.prawo-files {
+    background-color: white;
+    height: 150px;
+    width: 70vw;
+    border-radius: 1em;
+    margin-top: 20px;
+    align-content: center;
+}
+
+.folders,
+.files {
+    height: 50px;
+    width: 50vw;
+    background-color: rgb(189, 189, 247);
+    margin-left: 10vw;
+    border-radius: 1em;
+    color: rgb(74, 74, 253);
+    text-align: center;
+    align-content: center;
+}
+
+h3 {
+    margin-top: 15px;
+}
+
+.text {
+    width: 200px;
+}
+
+.dialogh2 {
+    text-align: center;
+}
+
+dialog {
+    height: 250px;
+}

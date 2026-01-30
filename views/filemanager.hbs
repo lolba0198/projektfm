@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="main">
+        <div class="lewo">
+            <br> <br>
+            <div class="srodek-lewo">
+                <button onclick="addFolder()">new folder</button> <br> <br>
+                <button onclick="addFile()">new file</button>
+
+                <dialog id="addFolder">
+                    <h2 class="dialogh2">new folder name</h2>
+                    <form action="/handleForm" method="GET">
+                        <input class="text" type="text" placeholder="wpisz nazwe folderu" name="foldername"> <br>
+                        <button id="btn-create-folder" type="submit">create</button>
+                    </form>
+                    <button id="btn-cancel-folder">cancel</button>
+                </dialog>
+
+                <dialog id="addFile">
+                    <h2 class="dialogh2">new file name</h2>
+                    <form action="/handleForm" method="GET">
+                        <input class="text" type="text" placeholder="wpisz nazwe pliku" name="filename"> <br>
+                        <button id="btn-create-file" type="submit">create</button>
+                    </form>
+                    <button id="btn-cancel-file">cancel</button>
+                </dialog>
+
+
+                <br><br><br>
+
+
+                <form enctype="multipart/form-data" class="form" method="POST" action="/handleUpload">
+                    <input class="selectfile" type="file" value="Select files to upload"> <br>
+                    <input id="file-upload" type="submit" value="upload">
+                </form>
+            </div>
+
+        </div>
+
+        <div class="prawo">
+            <div class="prawo-folders">
+                <div class="folders">
+                    <h3>folders</h3>
+                </div>
+            </div> <br>
+
+            <div class="prawo-files">
+                <div class="files">
+                    <h3>files</h3>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const btnCreateFolder = document.getElementById("btn-create-folder");
+            const btnCreateFile = document.getElementById("btn-create-file");
+            const btnCancelFolder = document.querySelector("#btn-cancel-folder");
+            const btnCancelFile = document.querySelector("#btn-cancel-file");
+            
+            const dialogFolder = document.querySelector("#addFolder");
+            const formFolder = dialogFolder.querySelector("form");
+            const dialogFile = document.querySelector("#addFile");
+            const formFile = dialogFile.querySelector("form");
+
+
+            function addFolder() {
+                document.querySelector("#addFolder").showModal();
+            }
+
+            function addFile() {
+                document.querySelector("#addFile").showModal();
+            }
+
+
+            btnCancelFolder.addEventListener("click", () => {
+                document.querySelector("#addFolder").close();
+            });
+
+            btnCancelFile.addEventListener("click", () => {
+                document.querySelector("#addFile").close();
+            })
+
+            btnCreateFolder.addEventListener("click", () => {
+                document.querySelector("#addFolder").close();
+            });
+
+            btnCreateFile.addEventListener("click", () => {
+                document.querySelector("#addFile").close();
+            });
+
+
+
+            dialogFile.addEventListener("close", () => {
+                formFile.reset();
+            });
+
+
+            dialogFolder.addEventListener("close", () => {
+                formFolder.reset();
+            });
+
+
+
+        </script>
+</body>
+</div>
+
+</html>
