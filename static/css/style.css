@@ -1,103 +1,219 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
 .main {
     display: flex;
-    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+    background-color: lightgray;
+    height: 100vh;
 }
+
 .lewo {
-    border: 5px solid lightgray;
-    height: 500px;
-    width: 400px;
+    width: 350px;
     background-color: white;
-    border-radius: 1em;
+    padding: 40px;
+    border-radius: 0 1em 1em 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .srodek-lewo {
-    margin-left: 100px;
+    width: 100%;
 }
 
-button {
-    height: 50px;
-    width: 207px;
+button, .custom-file-upload, #upload-btn {
+    width: 200px;
+    height: 45px;
     background-color: rgb(74, 74, 253);
-    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     color: white;
+    border: none;
     cursor: pointer;
-}
-
-input {
-    height: 50px;
-    width: 200px;
-    align-content: center;
-    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
-}
-
-.form {
-    height: 100px;
-    width: 200px;
-    background-color: lightgray;
+    display: flex;
     align-items: center;
-    align-content: center;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 14px;
+    text-decoration: none;
+    border-radius: 4px;
 }
 
-#btn-cancel-folder,
-#btn-cancel-file,
-#btn-create-folder,
-#btn-create-file {
-    margin-top: 10px;
+#upload-btn:disabled {
+    background-color: #ccc;
+    cursor: default;
 }
 
-.main {
-    background-color: lightgray;
-    height: 100vh;
-    width: 100vw;
+.nav-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 5px;
+}
+
+.nav-item-btn {
+    padding: 5px 10px;
+    background-color: white;
+    color: rgb(74, 74, 253);
+    border: 1px solid rgb(74, 74, 253);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 4px;
+}
+
+.nav-item-btn:hover {
+    background-color: rgb(74, 74, 253);
+    color: white;
+}
+
+.separator {
+    color: #666;
+    font-weight: bold;
 }
 
 
 .prawo {
-    border: 5px solid lightgray;
-    margin-left: 50px;
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
 }
 
-.prawo-folders {
+.prawo-folders, .prawo-files {
     background-color: white;
-    height: 150px;
-    width: 70vw;
     border-radius: 1em;
-    align-content: center;
+    margin-bottom: 20px;
+    padding: 20px;
+    min-height: 200px;
 }
 
-.prawo-files {
-    background-color: white;
-    height: 150px;
-    width: 70vw;
-    border-radius: 1em;
-    margin-top: 20px;
-    align-content: center;
-}
-
-.folders,
-.files {
-    height: 50px;
-    width: 50vw;
+.folders, .files {
     background-color: rgb(189, 189, 247);
-    margin-left: 10vw;
-    border-radius: 1em;
     color: rgb(74, 74, 253);
     text-align: center;
-    align-content: center;
+    padding: 10px;
+    border-radius: 1em;
+    margin-bottom: 20px;
 }
 
-h3 {
-    margin-top: 15px;
+.lista-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
-.text {
-    width: 200px;
+
+.kafelek {
+    width: 140px;
+    height: 110px;
+    border: 1px solid #eee;
+    background-color: #fff;
+    position: relative;
+    border-radius: 8px;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 20px; 
 }
 
-.dialogh2 {
+.ikona {
+    width: 35px;
+    font-size: 9px;
+    color: white;
     text-align: center;
+    padding: 4px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    border-radius: 3px;
 }
+
+.dir { 
+    background-color: blue; 
+}
+.file { 
+    background-color: black; 
+}
+
+.nazwa {
+    text-align: center;
+    color: blue;
+    font-size: 11px;
+    word-break: break-all;
+    padding: 0 5px;
+}
+
+.usun, .pobierz, .zip-btn, .rename-btn {
+    position: absolute;
+    text-decoration: none;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+}
+
+.usun {
+    top: 5px;
+    right: 8px;
+    color: blue;
+    font-size: 14px;
+}
+
+.pobierz {
+    bottom: 5px;
+    right: 8px;
+    color: green;
+    font-size: 16px;
+}
+
+.zip-btn {
+    bottom: 5px;
+    color: orange;
+    font-size: 14px;
+    right: 8px;
+}
+
+
+.rename-btn {
+    bottom: 5px;
+    left: 8px;
+    width: auto ;
+    height: auto ;
+    background: none ;
+    border: none ;
+    color: rgb(74, 74, 253) ;
+    padding: 0 ;
+    margin: 0 ;
+    font-size: 14px ;
+    display: inline ;
+}
+
 
 dialog {
-    height: 250px;
+    border: none;
+    border-radius: 1em;
+    padding: 20px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+dialog form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+dialog input.text {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+dialog button {
+    width: 100% ;
 }
