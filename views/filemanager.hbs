@@ -1,116 +1,93 @@
-<!DOCTYPE html>
-<html lang="en">
+<div class="main">
+    <div class="lewo">
+        <div class="srodek-lewo">
+            <div class="nav-bar">
+                {{#each navButtons}}
+                    <a href="/?path={{url}}" class="nav-item-btn">{{name}}</a>
+                    {{#unless @last}}<span class="separator">/</span>{{/unless}}
+                {{/each}}
+            </div>
+            <br>
+            <button onclick="addFolder()">new folder</button>
+            <br><button onclick="addFile()">new file</button>
+            <br>
+            <form enctype="multipart/form-data" method="POST" action="/handleUpload">
+                <input type="hidden" name="root" value="{{currentPath}}">
+                <input type="file" name="upload" id="f-input" multiple onchange="zmienNapis()" style="display:none">
+                <label for="f-input" class="custom-file-upload">Select files</label>
+                <input id="upload-btn" type="submit" value="upload" disabled>
+            </form>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-
-<body>
-    <div class="main">
-        <div class="lewo">
-            <br> <br>
-            <div class="srodek-lewo">
-                <button onclick="addFolder()">new folder</button> <br> <br>
-                <button onclick="addFile()">new file</button>
-
-                <dialog id="addFolder">
-                    <h2 class="dialogh2">new folder name</h2>
-                    <form action="/handleForm" method="GET">
-                        <input class="text" type="text" placeholder="wpisz nazwe folderu" name="foldername"> <br>
-                        <button id="btn-create-folder" type="submit">create</button>
-                    </form>
-                    <button id="btn-cancel-folder">cancel</button>
-                </dialog>
-
-                <dialog id="addFile">
-                    <h2 class="dialogh2">new file name</h2>
-                    <form action="/handleForm" method="GET">
-                        <input class="text" type="text" placeholder="wpisz nazwe pliku" name="filename"> <br>
-                        <button id="btn-create-file" type="submit">create</button>
-                    </form>
-                    <button id="btn-cancel-file">cancel</button>
-                </dialog>
-
-
-                <br><br><br>
-
-
-                <form enctype="multipart/form-data" class="form" method="POST" action="/handleUpload">
-                    <input class="selectfile" type="file" value="Select files to upload"> <br>
-                    <input id="file-upload" type="submit" value="upload">
+            <dialog id="addFolder">
+                <form action="/handleForm" method="GET">
+                    <input type="hidden" name="root" value="{{currentPath}}">
+                    <input class="text" type="text" name="foldername" placeholder="folder name" required> <br>
+                    <button type="submit">create</button>
                 </form>
-            </div>
+                <button onclick="document.getElementById('addFolder').close()">cancel</button>
+            </dialog>
 
+            <dialog id="addFile">
+                <form action="/handleForm" method="GET">
+                    <input type="hidden" name="root" value="{{currentPath}}">
+                    <input class="text" type="text" name="filename" placeholder="file name" required> <br>
+                    <button type="submit">create</button>
+                </form>
+                <button onclick="document.getElementById('addFile').close()">cancel</button>
+            </dialog>
+        </div>
+    </div>
+
+    <div class="prawo">
+        <div class="prawo-folders">
+            <div class="folders"><h3>folders</h3></div>
+            <div class="lista-items">
+                {{#each folders}}
+                <div class="kafelek">
+                    <a href="/?path={{targetPath}}" style="text-decoration: none;">
+                        <div class="ikona dir">DIR</div>
+                    </a>
+                    <div class="nazwa">[{{name}}]</div>
+                    <a href="/remove?root={{currentRoot}}&name={{name}}" class="usun" onclick="return confirm('Usunąć?')">X</a>
+                    <a href="/zip?root={{currentRoot}}&name={{name}}" class="zip-btn">Zip</a>
+                    <button class="rename-btn" onclick="renameItem('{{currentRoot}}', '{{name}}')">RN</button>
+                </div>
+                {{/each}}
+            </div>
         </div>
 
-        <div class="prawo">
-            <div class="prawo-folders">
-                <div class="folders">
-                    <h3>folders</h3>
+        <div class="prawo-files">
+            <div class="files"><h3>files</h3></div>
+            <div class="lista-items">
+                {{#each files}}
+                <div class="kafelek">
+                    <div class="ikona file">{{ext}}</div>
+                    <div class="nazwa">{{name}}</div>
+                    <a href="/remove?root={{currentRoot}}&name={{name}}" class="usun" onclick="return confirm('Usunąć?')">X</a>
+                    <a href="/download?root={{currentRoot}}&name={{name}}" class="pobierz">V</a>
+                    <button class="rename-btn" onclick="renameItem('{{currentRoot}}', '{{name}}')">RN</button>
                 </div>
-            </div> <br>
-
-            <div class="prawo-files">
-                <div class="files">
-                    <h3>files</h3>
-                </div>
+                {{/each}}
             </div>
         </div>
-
-        <script>
-            const btnCreateFolder = document.getElementById("btn-create-folder");
-            const btnCreateFile = document.getElementById("btn-create-file");
-            const btnCancelFolder = document.querySelector("#btn-cancel-folder");
-            const btnCancelFile = document.querySelector("#btn-cancel-file");
-            
-            const dialogFolder = document.querySelector("#addFolder");
-            const formFolder = dialogFolder.querySelector("form");
-            const dialogFile = document.querySelector("#addFile");
-            const formFile = dialogFile.querySelector("form");
-
-
-            function addFolder() {
-                document.querySelector("#addFolder").showModal();
-            }
-
-            function addFile() {
-                document.querySelector("#addFile").showModal();
-            }
-
-
-            btnCancelFolder.addEventListener("click", () => {
-                document.querySelector("#addFolder").close();
-            });
-
-            btnCancelFile.addEventListener("click", () => {
-                document.querySelector("#addFile").close();
-            })
-
-            btnCreateFolder.addEventListener("click", () => {
-                document.querySelector("#addFolder").close();
-            });
-
-            btnCreateFile.addEventListener("click", () => {
-                document.querySelector("#addFile").close();
-            });
-
-
-
-            dialogFile.addEventListener("close", () => {
-                formFile.reset();
-            });
-
-
-            dialogFolder.addEventListener("close", () => {
-                formFolder.reset();
-            });
-
-
-
-        </script>
-</body>
+    </div>
 </div>
 
-</html>
+<script>
+    function renameItem(root, oldName) {
+        let newName = prompt("Nowa nazwa:", oldName);
+        if (newName && newName != oldName) {
+            window.location.href = "/rename?root=" + root + "&oldName=" + oldName + "&newName=" + newName;
+        }
+    }
+    function zmienNapis() {
+        let inp = document.getElementById("f-input");
+        let btn = document.getElementById("upload-btn");
+        if (inp.files.length > 0) {
+            btn.value = "upload " + inp.files.length + " files";
+            btn.disabled = false;
+        }
+    }
+    function addFolder() { document.getElementById("addFolder").showModal(); }
+    function addFile() { document.getElementById("addFile").showModal(); }
+</script>
