@@ -1,0 +1,97 @@
+<div class="main">
+    <div class="lewo">
+        <button onclick="window.location.href='/?path={{root}}'">back</button>
+        <hr>
+        <div style="display:flex; gap:5px; flex-direction: column;">
+            <button id="btn-rename" style="background-color: rgb(74, 74, 253); color: white;">rename file</button>
+            <br>
+            <div style="display:flex; gap:5px">
+                <button id="f-minus" style="width: 45px;">-</button>
+                <input type="color" id="color-picker" style="display: none;">
+                <button id="btn-colors" style="width: 100px;">color</button>
+                <button id="f-plus" style="width: 45px;">+</button>
+            </div>
+            <br>
+            <button id="unified-save" style="background-color: #28a745;">SAVE ALL</button>
+        </div>
+    </div>
+    <div class="prawo">
+        <p>Editing: <b id="display-filename">{{name}}</b></p>
+        <div style="display:flex; background:white; border:1px solid #ccc; height:80%; overflow:hidden;">
+            <div id="line-numbers"
+                style="width:35px; background:#eee; padding:10px 5px; text-align:right; font-family:monospace; color:#888; line-height:20px; overflow:hidden;">
+                1</div>
+            <textarea id="textarea" spellcheck="false" wrap="off"
+                style="flex-grow:1; border:none; padding:10px; font-family:monospace; line-height:20px; resize:none; overflow:auto; outline:none;">{{content}}</textarea>
+        </div>
+    </div>
+</div>
+
+<script>
+    const area = document.getElementById("textarea");
+    const nums = document.getElementById("line-numbers");
+    const colorPicker = document.getElementById("color-picker");
+    const displayFilename = document.getElementById("display-filename");
+
+    let currentFileName = "{{name}}"; // Przechowujemy nazwę w zmiennej
+
+    // 1. Obsługa przycisku Rename
+    document.getElementById("btn-rename").onclick = () => {
+        let newName = prompt("Zmień nazwę pliku (pamiętaj o rozszerzeniu):", currentFileName);
+        if (newName) {
+            if (newName !== currentFileName) {
+                currentFileName = newName;
+                displayFilename.innerText = newName;
+            }
+        }
+    };
+
+    // 2. Numeracja i scroll
+    const updateLines = () => {
+        const count = area.value.split("\n").length;
+        nums.innerHTML = Array.from({ length: count }, (_, i) => i + 1).join("<br>");
+    }
+    area.oninput = updateLines;
+    area.onscroll = () => { nums.scrollTop = area.scrollTop; }
+
+    // 3. Kolory i fonty
+    document.getElementById("btn-colors").onclick = () => colorPicker.click();
+    colorPicker.oninput = () => { area.style.backgroundColor = colorPicker.value; };
+    document.getElementById("f-plus").onclick = () => { area.style.fontSize = (parseInt(window.getComputedStyle(area).fontSize) + 2) + "px"; };
+    document.getElementById("f-minus").onclick = () => { area.style.fontSize = (parseInt(window.getComputedStyle(area).fontSize) - 2) + "px"; };
+
+    // 4. Zapis wszystkiego
+    document.getElementById("unified-save").onclick = () => {
+        const data = {
+            root: "{{root}}",
+            oldName: "{{name}}",
+            newName: currentFileName,
+            content: area.value,
+            config: {
+                bgColor: area.style.backgroundColor,
+                fontSize: area.style.fontSize
+            }
+        };
+
+        fetch("/saveEverything", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+            .then(res => res.json())
+            .then(res => {
+                alert("Zapisano pomyślnie!");
+                if (res.redirect) {
+                    window.location.href = res.redirect;
+                }
+            });
+    };
+
+    // 5. Wczytanie configa
+    fetch("/getConfig").then(r => r.json()).then(d => {
+        area.style.backgroundColor = d.bgColor || "#ffffff";
+        area.style.fontSize = d.fontSize || "14px";
+        colorPicker.value = d.bgColor || "#ffffff";
+        updateLines();
+    });
+</script>
