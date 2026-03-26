@@ -7,47 +7,26 @@
                     {{#unless @last}}<span class="separator">/</span>{{/unless}}
                 {{/each}}
             </div>
-            <br>
-            <button onclick="addFolder()">new folder</button>
+            <br><button onclick="addFolder()">new folder</button>
             <br><button onclick="addFile()">new file</button>
             <br>
             <form enctype="multipart/form-data" method="POST" action="/handleUpload">
                 <input type="hidden" name="root" value="{{currentPath}}">
                 <input type="file" name="upload" id="f-input" multiple onchange="zmienNapis()" style="display:none">
-                <label for="f-input" class="custom-file-upload">Select files</label>
+                <label for="f-input" class="custom-file-upload" style="cursor:pointer">Select files</label>
                 <input id="upload-btn" type="submit" value="upload" disabled>
             </form>
-
-            <dialog id="addFolder">
-                <form action="/handleForm" method="GET">
-                    <input type="hidden" name="root" value="{{currentPath}}">
-                    <input class="text" type="text" name="foldername" placeholder="folder name" required> <br>
-                    <button type="submit">create</button>
-                </form>
-                <button onclick="document.getElementById('addFolder').close()">cancel</button>
-            </dialog>
-
-            <dialog id="addFile">
-                <form action="/handleForm" method="GET">
-                    <input type="hidden" name="root" value="{{currentPath}}">
-                    <input class="text" type="text" name="filename" placeholder="file name" required> <br>
-                    <button type="submit">create</button>
-                </form>
-                <button onclick="document.getElementById('addFile').close()">cancel</button>
-            </dialog>
         </div>
     </div>
 
-    <div class="prawo">
+    <div class="prawo" id="drop-zone">
         <div class="prawo-folders">
             <div class="folders"><h3>folders</h3></div>
             <div class="lista-items">
                 {{#each folders}}
                 <div class="kafelek">
-                    <a href="/?path={{targetPath}}" style="text-decoration: none;">
-                        <div class="ikona dir">DIR</div>
-                    </a>
-                    <div class="nazwa">[{{name}}]</div>
+                    <a href="/?path={{targetPath}}" style="text-decoration: none;"><div class="ikona dir">DIR</div></a>
+                    <div class="nazwa">{{name}}</div>
                     <a href="/remove?root={{currentRoot}}&name={{name}}" class="usun" onclick="return confirm('Usunąć?')">X</a>
                     <a href="/zip?root={{currentRoot}}&name={{name}}" class="zip-btn">Zip</a>
                     <button class="rename-btn" onclick="renameItem('{{currentRoot}}', '{{name}}')">RN</button>
@@ -61,8 +40,15 @@
             <div class="lista-items">
                 {{#each files}}
                 <div class="kafelek">
-                    <div class="ikona file">{{ext}}</div>
-                    <div class="nazwa">{{name}}</div>
+                    {{#if isEditable}}
+                        <a href="/editor?root={{currentRoot}}&name={{name}}" style="text-decoration: none;">
+                            <div class="ikona file">{{ext}}</div>
+                        </a>
+                        <div class="nazwa">{{name}}</div>
+                    {{else}}
+                        <div class="ikona file" style="background-color: #555;">{{ext}}</div>
+                        <div class="nazwa" style="color: #555;">{{name}}</div>
+                    {{/if}}
                     <a href="/remove?root={{currentRoot}}&name={{name}}" class="usun" onclick="return confirm('Usunąć?')">X</a>
                     <a href="/download?root={{currentRoot}}&name={{name}}" class="pobierz">V</a>
                     <button class="rename-btn" onclick="renameItem('{{currentRoot}}', '{{name}}')">RN</button>
@@ -73,21 +59,49 @@
     </div>
 </div>
 
+<dialog id="addFolder">
+    <form action="/handleForm" method="GET">
+        <input type="hidden" name="root" value="{{currentPath}}">
+        <input class="text" type="text" name="foldername" placeholder="folder name" required><br>
+        <button type="submit">create</button>
+    </form>
+    <button onclick="document.getElementById('addFolder').close()">cancel</button>
+</dialog>
+
+<dialog id="addFile">
+    <form action="/handleForm" method="GET">
+        <input type="hidden" name="root" value="{{currentPath}}">
+        <input class="text" type="text" name="filename" placeholder="file name" required>
+        <select name="ext">
+            <option value="txt">.txt</option><option value="html">.html</option>
+            <option value="css">.css</option><option value="js">.js</option>
+            <option value="json">.json</option>
+        </select><br><br>
+        <button type="submit">create</button>
+    </form>
+    <button onclick="document.getElementById('addFile').close()">cancel</button>
+</dialog>
+
 <script>
     function renameItem(root, oldName) {
         let newName = prompt("Nowa nazwa:", oldName);
-        if (newName && newName != oldName) {
-            window.location.href = "/rename?root=" + root + "&oldName=" + oldName + "&newName=" + newName;
-        }
+        if (newName && newName != oldName) { window.location.href = "/rename?root=" + root + "&oldName=" + oldName + "&newName=" + newName; }
     }
     function zmienNapis() {
         let inp = document.getElementById("f-input");
         let btn = document.getElementById("upload-btn");
-        if (inp.files.length > 0) {
-            btn.value = "upload " + inp.files.length + " files";
-            btn.disabled = false;
-        }
+        if (inp.files.length > 0) { btn.value = "upload " + inp.files.length + " files"; btn.disabled = false; }
     }
     function addFolder() { document.getElementById("addFolder").showModal(); }
     function addFile() { document.getElementById("addFile").showModal(); }
+
+    const dz = document.getElementById("drop-zone");
+    dz.ondragover = e => e.preventDefault();
+    dz.ondrop = e => {
+        e.preventDefault();
+        const fd = new FormData();
+        fd.append('root', "{{currentPath}}");
+        for (let f of e.dataTransfer.files) fd.append('upload', f);
+        fetch("/handleUpload", { method: "POST", body: fd, headers: {'x-requested-with': 'XMLHttpRequest'} }).then(() => window.location.reload());
+    };
 </script>
