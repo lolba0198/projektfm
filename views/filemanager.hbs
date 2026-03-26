@@ -7,9 +7,11 @@
                     {{#unless @last}}<span class="separator">/</span>{{/unless}}
                 {{/each}}
             </div>
+            
             <br><button onclick="addFolder()">new folder</button>
             <br><button onclick="addFile()">new file</button>
             <br>
+            
             <form enctype="multipart/form-data" method="POST" action="/handleUpload">
                 <input type="hidden" name="root" value="{{currentPath}}">
                 <input type="file" name="upload" id="f-input" multiple onchange="zmienNapis()" style="display:none">
@@ -83,25 +85,83 @@
 </dialog>
 
 <script>
+    // blokuje domyslne zachowanie przegladarki na dragowaniu
+    document.querySelector("html").ondragover = e => { e.preventDefault(); e.stopPropagation(); }
+    document.querySelector("html").ondrop = e => { e.preventDefault(); e.stopPropagation(); }
+
+    const dz = document.getElementById("drop-zone");
+
+    // drag wizualnie
+    dz.ondragenter = function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        dz.classList.add("drag-over");
+    }
+
+    dz.ondragover = function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        if(!dz.classList.contains("drag-over")) dz.classList.add("drag-over");
+    }
+
+    dz.ondragleave = function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        if (e.relatedTarget !== dz) {
+             dz.classList.remove("drag-over");
+        }
+    }
+
+    // drop fetch
+    dz.ondrop = function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        dz.classList.remove("drag-over"); 
+
+        const files = e.dataTransfer.files;
+        if (files.length === 0) return;
+
+        const fd = new FormData();
+        fd.append('root', "{{currentPath}}");
+
+        for (let i = 0; i < files.length; i++) {
+            fd.append('upload', files[i]);
+        }
+
+        // asynchroniczne wysłanie plików bez reloada
+        fetch("/handleUpload", { 
+            method: "post", 
+            body: fd, 
+            headers: {'x-requested-with': 'XMLHttpRequest'} 
+        })
+        .then(response => response.text())
+        .then(data => {
+            alert("wysłano " + files.length + " plik(ów)!");
+            window.location.reload();
+        })
+        .catch(error => {
+            console.error(error);
+            dz.classList.remove("drag-over");
+        });
+    };
+
+    // wywoluje zmiane nazwy i przekierowuje do endpointu
     function renameItem(root, oldName) {
         let newName = prompt("Nowa nazwa:", oldName);
-        if (newName && newName != oldName) { window.location.href = "/rename?root=" + root + "&oldName=" + oldName + "&newName=" + newName; }
+        if (newName && newName != oldName) { 
+            window.location.href = "/rename?root=" + root + "&oldName=" + oldName + "&newName=" + newName; 
+        }
     }
+
     function zmienNapis() {
         let inp = document.getElementById("f-input");
         let btn = document.getElementById("upload-btn");
-        if (inp.files.length > 0) { btn.value = "upload " + inp.files.length + " files"; btn.disabled = false; }
+        if (inp.files.length > 0) { 
+            btn.value = "upload " + inp.files.length + " files"; 
+            btn.disabled = false; 
+        }
     }
+
     function addFolder() { document.getElementById("addFolder").showModal(); }
     function addFile() { document.getElementById("addFile").showModal(); }
-
-    const dz = document.getElementById("drop-zone");
-    dz.ondragover = e => e.preventDefault();
-    dz.ondrop = e => {
-        e.preventDefault();
-        const fd = new FormData();
-        fd.append('root', "{{currentPath}}");
-        for (let f of e.dataTransfer.files) fd.append('upload', f);
-        fetch("/handleUpload", { method: "POST", body: fd, headers: {'x-requested-with': 'XMLHttpRequest'} }).then(() => window.location.reload());
-    };
 </script>
