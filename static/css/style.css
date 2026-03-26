@@ -217,3 +217,10 @@ dialog input.text {
 dialog button {
     width: 100% ;
 }
+
+.drag-over {
+    background-color: #e0e7ff !important; 
+    outline: 3px dashed rgb(74, 74, 253) !important;
+    outline-offset: -10px;
+    transition: all 0.2s ease;
+}
