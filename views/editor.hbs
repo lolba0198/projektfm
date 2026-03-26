@@ -33,9 +33,8 @@
     const colorPicker = document.getElementById("color-picker");
     const displayFilename = document.getElementById("display-filename");
 
-    let currentFileName = "{{name}}"; // Przechowujemy nazwę w zmiennej
+    let currentFileName = "{{name}}";
 
-    // 1. Obsługa przycisku Rename
     document.getElementById("btn-rename").onclick = () => {
         let newName = prompt("Zmień nazwę pliku (pamiętaj o rozszerzeniu):", currentFileName);
         if (newName) {
@@ -46,21 +45,22 @@
         }
     };
 
-    // 2. Numeracja i scroll
-    const updateLines = () => {
-        const count = area.value.split("\n").length;
-        nums.innerHTML = Array.from({ length: count }, (_, i) => i + 1).join("<br>");
+    area.onkeyup = function () {
+        const lines = area.value.split("\n");
+        let html = "";
+        for (let i = 1; i <= lines.length; i++) {
+            html += i + "<br>";
+        }
+        nums.innerHTML = html;
     }
-    area.oninput = updateLines;
+
     area.onscroll = () => { nums.scrollTop = area.scrollTop; }
 
-    // 3. Kolory i fonty
     document.getElementById("btn-colors").onclick = () => colorPicker.click();
     colorPicker.oninput = () => { area.style.backgroundColor = colorPicker.value; };
     document.getElementById("f-plus").onclick = () => { area.style.fontSize = (parseInt(window.getComputedStyle(area).fontSize) + 2) + "px"; };
     document.getElementById("f-minus").onclick = () => { area.style.fontSize = (parseInt(window.getComputedStyle(area).fontSize) - 2) + "px"; };
 
-    // 4. Zapis wszystkiego
     document.getElementById("unified-save").onclick = () => {
         const data = {
             root: "{{root}}",
@@ -87,11 +87,10 @@
             });
     };
 
-    // 5. Wczytanie configa
     fetch("/getConfig").then(r => r.json()).then(d => {
         area.style.backgroundColor = d.bgColor || "#ffffff";
         area.style.fontSize = d.fontSize || "14px";
         colorPicker.value = d.bgColor || "#ffffff";
-        updateLines();
+        area.onkeyup();
     });
 </script>
